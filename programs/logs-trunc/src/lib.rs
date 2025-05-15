@@ -13,16 +13,12 @@ pub mod logs_trunc {
         Ok(())
     }
 
-    pub fn deposit(ctx: Context<Deposit>) -> Result<()> {
+    pub fn deposit(ctx: Context<Deposit>, row_length: u64, row_count: u64) -> Result<()> {
         let counter = &mut ctx.accounts.counter;
         counter.value += 1;
 
-        for i in 0..11 {
-            // Create a string with repeating digits based on the iteration number
-            let digit = i.to_string();
-            let large_string = digit.repeat(1_024_000);
-            
-            // Log the large string
+        let large_string = "A".repeat(row_length as usize);
+        for _ in 0..row_count {
             msg!("{}", large_string);
         }
 
