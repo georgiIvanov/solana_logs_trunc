@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+// use logging_program::logging_program;
 
 declare_id!("DUKnRfntDqsg2jvN5JUvh8otaCAfQe4Q5etkrdm8tE4D");
 
@@ -17,10 +18,14 @@ pub mod logs_trunc {
         let counter = &mut ctx.accounts.counter;
         counter.value += 1;
 
-        let large_string = "A".repeat(row_length as usize);
-        for _ in 0..row_count {
-            msg!("{}", large_string);
-        }
+        // Call the logging program via CPI
+        // let cpi_program = ctx.accounts.logging_program.to_account_info();
+        // let cpi_accounts = logging_program::LogEvents {
+        //     signer: ctx.accounts.user.clone(),
+        // };
+        
+        // let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+        // logging_program::log_events(cpi_ctx, row_length, row_count)?;
 
         msg!("Deposit executed: amount = 1234, fee = 1, etc, etc");
         Ok(())
@@ -45,4 +50,6 @@ pub struct Initialize<'info> {
 pub struct Deposit<'info> {
     #[account(mut, seeds = [b"counter"], bump)]
     pub counter: Account<'info, Counter>,
+    pub user: Signer<'info>,
+    // pub logging_program: Program<'info, >,
 }

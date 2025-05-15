@@ -7,12 +7,13 @@ skip-lint = false
 
 [programs.localnet]
 logs_trunc = "DUKnRfntDqsg2jvN5JUvh8otaCAfQe4Q5etkrdm8tE4D"
+emitter = "HVxkVckuk55bkXeXZoz78aMsVYL5ChTyQ8aiPymicUTf"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
+cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
