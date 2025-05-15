@@ -1,3 +1,6 @@
+
+This is a demo on Solana program log truncation.
+
 # Run PoC
 
 1. `npm install`
