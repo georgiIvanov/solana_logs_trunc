@@ -1,5 +1,5 @@
 
-This is a demo on Solana program log truncation.
+This is a demo on Solana program log truncation when logs reach 10kb.
 
 # Run PoC
 
@@ -17,3 +17,10 @@ This is a demo on Solana program log truncation.
 
 Change `provider.cluster` to `localnet` (in `Anchor.toml`)
 
+# Examples
+
+A deposit function is invoked. At the end it emits a `Deposit Executed` event log.
+In one case the deposit is visible since few logs were printed and in the other its not.
+
+- [Full logs](https://explorer.solana.com/tx/5n2h8xvpZdsZxfdzvczP14jY36Wtbe26hDZD8ULmrayD22Y5chYCqRB1M829KXdnHYmxzpgiDtdLWD59ch8rzPmX?cluster=devnet)
+- [Truncated logs](https://explorer.solana.com/tx/5hNNQ6vJFfSZC7TckyJtGjV1TguQXcm4coiC4PaNGcnra86mPdB49uFAcw24qxobftXasvs6v7dc5uDncjnQELSV?cluster=devnet)
