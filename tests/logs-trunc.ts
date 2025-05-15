@@ -1,9 +1,10 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { LogsTrunc } from "../target/types/logs_trunc";
-import { Keypair, PublicKey } from '@solana/web3.js';
+import { Keypair, PublicKey, SystemProgram } from '@solana/web3.js';
 import { assert } from "chai";
 import BN from "bn.js";
+import { SYSTEM_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/native/system";
 
 
 describe("logs-trunc", () => {
@@ -11,11 +12,12 @@ describe("logs-trunc", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
 
-  const programId = new PublicKey("DUKnRfntDqsg2jvN5JUvh8otaCAfQe4Q5etkrdm8tE4D");
+  const logs_trunc_id = new PublicKey("DUKnRfntDqsg2jvN5JUvh8otaCAfQe4Q5etkrdm8tE4D");
+  const emitter_id = new PublicKey("HVxkVckuk55bkXeXZoz78aMsVYL5ChTyQ8aiPymicUTf");
 
   const [counterPDA] = PublicKey.findProgramAddressSync(
     [Buffer.from("counter")],
-    programId
+    logs_trunc_id
   );
 
 
@@ -25,35 +27,37 @@ describe("logs-trunc", () => {
     provider
   ) as Program<LogsTrunc>;
 
-  // it("Is initialized!", async () => {
-  //   const tx = await program.methods
-  //     .initialize()
-  //     .accounts({
-  //       user: provider.wallet.publicKey,
-  //     })
-  //     .rpc();
+  it("Is initialized!", async () => {
+    const tx = await program.methods
+      .initialize()
+      .accounts({
+        user: provider.wallet.publicKey,
+      })
+      .rpc();
       
-  //   console.log("Initialize transaction signature", tx);
-  //   console.log("Counter PDA:", counterPDA.toString());
+    console.log("Initialize transaction signature", tx);
+    console.log("Counter PDA:", counterPDA.toString());
 
-  //   // Verify the counter was initialized properly
-  //   const counterAccount = await program.account.counter.fetch(counterPDA);
-  //   assert.equal(counterAccount.value.toNumber(), 0);
-  // });
+    // Verify the counter was initialized properly
+    const counterAccount = await program.account.counter.fetch(counterPDA);
+    assert.equal(counterAccount.value.toNumber(), 0);
+  });
 
   it("Calls deposit function and emits event", async () => {
     try {
       // Call the deposit function with the counter PDA
       const tx = await program.methods
-        .deposit(new BN(1000), new BN(50))
+        .deposit(new BN(5), new BN(500), new BN(60)) // row length, row count
         .accounts({
           counter: counterPDA,
+          user: provider.wallet.publicKey,
+          emitter_program: emitter_id,
+          system_program: SYSTEM_PROGRAM_ID
         })
         .rpc();
       
       console.log("Deposit transaction signature", tx);
       
-      // If you want transaction logs (note: may be truncated due to large messages)
       const txDetails = await provider.connection.getTransaction(tx, {
         commitment: "confirmed", maxSupportedTransactionVersion: 0
       });
@@ -67,6 +71,13 @@ describe("logs-trunc", () => {
       
     } catch (error) {
       console.error("Error:", error);
+      const sendTxError = error as anchor.web3.SendTransactionError;
+      if (sendTxError.getLogs) {
+        const logs = await sendTxError.getLogs(provider.connection);
+        console.log("Full transaction logs:", logs);
+      } else {
+        console.log("Could not get logs - getLogs method not available");
+      }
       throw error;
     }
   });
