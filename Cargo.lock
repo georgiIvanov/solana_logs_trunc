@@ -743,6 +743,7 @@ name = "logs-trunc"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",
+ "emitter",
 ]
 
 [[package]]

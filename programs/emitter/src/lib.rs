@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
-use anchor_lang::system_program::ID;
+
+declare_id!("HVxkVckuk55bkXeXZoz78aMsVYL5ChTyQ8aiPymicUTf");
 
 #[program]
 pub mod emitter {
@@ -16,7 +17,6 @@ pub mod emitter {
 }
 
 #[derive(Accounts)]
-pub struct LogEvents {
-    // #[account(mut)] maybe?
-    // pub signer: Signer<'info>,
+pub struct LogEvents<'info> {
+    pub system_program: Program<'info, System>,
 }

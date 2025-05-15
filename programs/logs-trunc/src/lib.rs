@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-// use logging_program::logging_program;
+use emitter::program::Emitter;
 
 declare_id!("DUKnRfntDqsg2jvN5JUvh8otaCAfQe4Q5etkrdm8tE4D");
 
@@ -14,18 +14,21 @@ pub mod logs_trunc {
         Ok(())
     }
 
-    pub fn deposit(ctx: Context<Deposit>, row_length: u64, row_count: u64) -> Result<()> {
+    pub fn deposit(ctx: Context<Deposit>, cpi_count: u64, row_length: u64, row_count: u64) -> Result<()> {
         let counter = &mut ctx.accounts.counter;
         counter.value += 1;
 
-        // Call the logging program via CPI
-        // let cpi_program = ctx.accounts.logging_program.to_account_info();
-        // let cpi_accounts = logging_program::LogEvents {
-        //     signer: ctx.accounts.user.clone(),
-        // };
+        let cpi_program = ctx.accounts.emitter_program.to_account_info();
         
-        // let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
-        // logging_program::log_events(cpi_ctx, row_length, row_count)?;
+        for _ in 0..cpi_count {
+            let cpi_ctx: CpiContext<'_, '_, '_, '_, emitter::cpi::accounts::LogEvents<'_>> = CpiContext::new(
+                cpi_program.clone(), 
+                emitter::cpi::accounts::LogEvents {
+                    system_program: ctx.accounts.system_program.to_account_info(),
+                }
+            );
+            let _ = emitter::cpi::log_events(cpi_ctx, row_length, row_count);
+        }
 
         msg!("Deposit executed: amount = 1234, fee = 1, etc, etc");
         Ok(())
@@ -51,5 +54,6 @@ pub struct Deposit<'info> {
     #[account(mut, seeds = [b"counter"], bump)]
     pub counter: Account<'info, Counter>,
     pub user: Signer<'info>,
-    // pub logging_program: Program<'info, >,
+    pub emitter_program: Program<'info, Emitter>,
+    pub system_program: Program<'info, System>,
 }
