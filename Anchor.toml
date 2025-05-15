@@ -9,12 +9,17 @@ skip-lint = false
 logs_trunc = "DUKnRfntDqsg2jvN5JUvh8otaCAfQe4Q5etkrdm8tE4D"
 emitter = "HVxkVckuk55bkXeXZoz78aMsVYL5ChTyQ8aiPymicUTf"
 
+[programs.devnet]
+logs_trunc = "DUKnRfntDqsg2jvN5JUvh8otaCAfQe4Q5etkrdm8tE4D"
+emitter = "HVxkVckuk55bkXeXZoz78aMsVYL5ChTyQ8aiPymicUTf"
+
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+deposit = "npm run deposit scripts/deposit.ts"

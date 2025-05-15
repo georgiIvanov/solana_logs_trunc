@@ -58,7 +58,6 @@ describe("logs-trunc", () => {
       
       console.log("Deposit transaction signature", tx);
       
-      // If you want transaction logs (note: may be truncated due to large messages)
       const txDetails = await provider.connection.getTransaction(tx, {
         commitment: "confirmed", maxSupportedTransactionVersion: 0
       });
@@ -72,6 +71,13 @@ describe("logs-trunc", () => {
       
     } catch (error) {
       console.error("Error:", error);
+      const sendTxError = error as anchor.web3.SendTransactionError;
+      if (sendTxError.getLogs) {
+        const logs = await sendTxError.getLogs(provider.connection);
+        console.log("Full transaction logs:", logs);
+      } else {
+        console.log("Could not get logs - getLogs method not available");
+      }
       throw error;
     }
   });
