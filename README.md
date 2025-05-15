@@ -4,8 +4,9 @@ This is a demo on Solana program log truncation when logs reach 10kb.
 # Run PoC
 
 1. `npm install`
-2. `anchor run deposit`
-3. Look up logs in the tx signature
+2. `anchor build`
+3. `anchor run deposit`
+4. Look up logs using the `Deposit transaction signature: ...`
 
 # To deploy on devnet
 
