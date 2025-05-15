@@ -29,34 +29,24 @@ const emitterId = new PublicKey(config.programs.devnet.emitter);
 console.log(`LogsTrunc program ID: ${logsTruncId.toString()}`);
 console.log(`Emitter program ID: ${emitterId.toString()}`);
 
-// Configure the client
 const provider = anchor.AnchorProvider.env();
 anchor.setProvider(provider);
 
-// Initialize program
 const program = new anchor.Program(
   require("../target/idl/logs_trunc.json"),
   provider
 ) as Program<LogsTrunc>;
 
-// Find counter PDA
-const [counterPDA] = PublicKey.findProgramAddressSync(
-  [Buffer.from("counter")],
-  logsTruncId
-);
-
-// Create execute function
 async function executeDeposit() {
   try {
     console.log("Calling deposit with moderate parameters...");
-    
-    // Call the deposit function with safer parameters
+    // CPI calls x row_lengths x row_count
+    //  1 cpi    x 100 chars   x 5         = 500 bytes
+    // 20 cpi    x 100 chars   x 5         = 10000 bytes = 10 kb
     const tx = await program.methods
-      .deposit(new BN(5), new BN(100), new BN(5))
+      .deposit(new BN(20), new BN(100), new BN(5))
       .accounts({
         user: provider.wallet.publicKey,
-        // loggingProgram: emitterId,
-        // systemProgram: anchor.web3.SystemProgram.programId,
       })
       .rpc();
     
@@ -69,7 +59,6 @@ async function executeDeposit() {
       });
       
       if (txDetails?.meta?.logMessages) {
-        // Log only a few messages to avoid console overflow
         console.log("First few transaction logs:", 
           txDetails.meta.logMessages.slice(0, 5));
         console.log(`...and ${txDetails.meta.logMessages.length - 5} more log messages`);
