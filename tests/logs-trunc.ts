@@ -50,10 +50,7 @@ describe("logs-trunc", () => {
       const tx = await program.methods
         .deposit(new BN(2), new BN(100), new BN(10)) // row length, row count
         .accounts({
-          counter: counterPDA,
           user: provider.wallet.publicKey,
-          emitter_program: emitter_id,
-          system_program: SYSTEM_PROGRAM_ID
         })
         .rpc();
       
