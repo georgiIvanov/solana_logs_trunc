@@ -46,8 +46,9 @@ describe("logs-trunc", () => {
   it("Calls deposit function and emits event", async () => {
     try {
       // Call the deposit function with the counter PDA
+      // args: cpi x row length x row count
       const tx = await program.methods
-        .deposit(new BN(5), new BN(500), new BN(60)) // row length, row count
+        .deposit(new BN(2), new BN(100), new BN(10)) // row length, row count
         .accounts({
           counter: counterPDA,
           user: provider.wallet.publicKey,
